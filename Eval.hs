@@ -30,6 +30,17 @@ eval "^" _ = error "Stack underflow"
 -- Duplicate the element at the top of the stack
 eval "DUP" (x : tl) = (x : x : tl)
 eval "DUP" [] = error ("Stack underflow")
+-- STR: convert value to string
+eval "STR" (x : tl) = Id (show x) : tl
+eval "STR" [] = error "Stack underflow"
+-- CONCAT2
+eval "CONCAT2" (Id a : Id b : tl) =
+  Id (a ++ b) : tl
+eval "CONCAT2" _ = error "Invalid arguments"
+-- CONCAT3
+eval "CONCAT3" (Id a : Id b : Id c : tl) =
+  Id (a ++ b ++ c) : tl
+eval "CONCAT3" _ = error "Invalid arguments"
 -- this must be the last rule
 -- it assumes that no match is made and preserves the string as argument
 eval s l = Id s : l
@@ -42,6 +53,15 @@ evalOut "." (Id x : tl, out) = (tl, out ++ x)
 evalOut "." (Integer i : tl, out) = (tl, out ++ (show i))
 evalOut "." (Real x : tl, out) = (tl, out ++ (show x))
 evalOut "." ([], _) = error "Stack underflow"
+-- EMIT: print ASCII character
+evalOut "EMIT" (Integer i : tl, out) =
+  (tl, out ++ [toEnum i])
+evalOut "EMIT" (Real r : tl, out) =
+  (tl, out ++ [toEnum (round r)])
+evalOut "EMIT" _ = error "Stack underflow"
+-- CR: newline
+evalOut "CR" (stack, out) =
+  (stack, out ++ "\n")
 -- this has to be the last case
 -- if no special case, ask eval to deal with it and propagate output
 evalOut op (stack, out) = (eval op stack, out)

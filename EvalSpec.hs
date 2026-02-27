@@ -47,10 +47,21 @@ main = hspec $ do
       it "divides numbers" $
         eval "/" [Integer 6, Integer 3] `shouldBe` [Real 2.0]
 
-    context "^" $
-      do
-        it "computes power" $
-          eval "^" [Integer 2, Integer 3] `shouldBe` [Real 8.0]
+    context "^" $ do
+      it "computes power" $
+        eval "^" [Integer 2, Integer 3] `shouldBe` [Real 8.0]
+
+    context "STR" $ do
+      it "converts integer to string" $
+        eval "STR" [Integer 5] `shouldBe` [Id "Integer 5"]
+
+    context "CONCAT2" $ do
+      it "concatenates two strings" $
+        eval "CONCAT2" [Id "Hello", Id "World"] `shouldBe` [Id "HelloWorld"]
+
+    context "CONCAT3" $ do
+      it "concatenates three strings" $
+        eval "CONCAT3" [Id "A", Id "B", Id "C"] `shouldBe` [Id "ABC"]
 
   describe "evalOut" $ do
     context "." $ do
@@ -64,3 +75,13 @@ main = hspec $ do
 
     it "eval pass-through" $ do
       evalOut "*" ([Real 2.0, Integer 2], "blah") `shouldBe` ([Real 4.0], "blah")
+
+    context "EMIT" $ do
+      it "prints ASCII character" $
+        evalOut "EMIT" ([Integer 65], "")
+          `shouldBe` ([], "A")
+
+    context "CR" $ do
+      it "prints newline" $
+        evalOut "CR" ([], "")
+          `shouldBe` ([], "\n")
