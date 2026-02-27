@@ -39,9 +39,19 @@ main = hspec $ do
       it "adds integers" $
         eval "+" [Integer 2, Integer 3] `shouldBe` [Integer 5]
 
+      it "adds floats" $ do
+        eval "+" [Integer 2, Real 3.0] `shouldBe` [Real 5.0]
+        eval "+" [Real 3.0, Integer 3] `shouldBe` [Real 6.0]
+        eval "+" [Real 4.0, Real 3.0] `shouldBe` [Real 7.0]
+
     context "-" $ do
       it "subtracts integers" $
         eval "-" [Integer 5, Integer 3] `shouldBe` [Integer 2]
+
+      it "subtracts floats" $ do
+        eval "-" [Integer 2, Real 3.0] `shouldBe` [Real (-1.0)]
+        eval "-" [Real 3.0, Integer 3] `shouldBe` [Real 0.0]
+        eval "-" [Real 4.0, Real 3.0] `shouldBe` [Real 1.0]
 
     context "/" $ do
       it "divides numbers" $
