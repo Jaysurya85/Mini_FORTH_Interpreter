@@ -19,11 +19,14 @@ run_all:
 	$(CABAL) run $(EXEC) -- tests/t8.4TH
 	$(CABAL) run $(EXEC) -- tests/t9.4TH
 	$(CABAL) run $(EXEC) -- tests/t10.4TH
+	$(CABAL) run $(EXEC) -- tests/bonust1.4TH
 
 unit:
 	runhaskell ValSpec.hs
 	runhaskell EvalSpec.hs
-	runhaskell InterpretSpec.hs
+	runhaskell \
+		--ghc-arg=-package --ghc-arg=containers \
+		InterpretSpec.hs
 
 clean:
 	$(CABAL) clean

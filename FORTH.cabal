@@ -49,7 +49,8 @@ executable FORTH
   -- Other library packages from which modules are imported.
   build-depends:       
       base >=4.10 && <5,
-      flow >=1.0.19
+      flow >=1.0.19,
+      containers
   
   -- Directories containing source files.
   -- hs-source-dirs:      
@@ -57,13 +58,3 @@ executable FORTH
   -- Base language which the package is written in.
   default-language:    Haskell2010
 
-test-suite FORTH-tests
-  type: exitcode-stdio-1.0
-  main-is: EvalSpec.hs
-  other-modules: Val, Eval, Interpret
-  build-depends:
-      base >=4.10 && <5,
-      flow >=1.0.19,
-      hspec,
-      QuickCheck
-  default-language: Haskell2010 

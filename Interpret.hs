@@ -1,25 +1,42 @@
 module Interpret where
 
--- this file contains the FORTH interpreter
-
+import qualified Data.Map as M
 import Eval
-import Flow
 import Val
 
--- inner function for foldl
--- Takes the current stack and an input and
--- computes the next stack
-evalF :: ([Val], String) -> Val -> ([Val], String)
-evalF s (Id op) = evalOut op s
--- cannot run, put on the stack and preserve output
-evalF (s, out) x = (x : s, out)
+-- Interpreter state:
+-- (stack, output, definitions)
+type State = ([Val], String, M.Map String [Val])
 
--- function to interpret a string into a stack and
--- an output string
+-- Main interpret function
 interpret :: String -> ([Val], String)
 interpret text =
-  text
-    |> words
-    |> map strToVal -- brake text into words
-    |> foldl evalF ([], "") -- strings to instructions
-    -- perform evaluation
+  let tokens = map strToVal (words text)
+      (stack, out, _) = run tokens ([], "", M.empty)
+   in (stack, out)
+
+-- Recursive execution engine
+run :: [Val] -> State -> State
+run [] state = state
+-- Function definition start
+run (Id ":" : Id name : rest) (stack, out, defs) =
+  let (body, remaining) = collectBody rest []
+      newDefs = M.insert name body defs
+   in run remaining (stack, out, newDefs)
+-- Execute word or operator
+run (Id word : rest) (stack, out, defs) =
+  case M.lookup word defs of
+    Just body ->
+      run (body ++ rest) (stack, out, defs)
+    Nothing ->
+      let (newStack, newOut) = evalOut word (stack, out)
+       in run rest (newStack, newOut, defs)
+-- Push literal onto stack
+run (val : rest) (stack, out, defs) =
+  run rest (val : stack, out, defs)
+
+-- Collect function body until ';'
+collectBody :: [Val] -> [Val] -> ([Val], [Val])
+collectBody [] _ = error "Missing ';' in function definition"
+collectBody (Id ";" : rest) acc = (reverse acc, rest)
+collectBody (x : xs) acc = collectBody xs (x : acc)
