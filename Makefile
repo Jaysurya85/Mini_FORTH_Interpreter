@@ -20,6 +20,8 @@ run_all:
 	$(CABAL) run $(EXEC) -- tests/t9.4TH
 	$(CABAL) run $(EXEC) -- tests/t10.4TH
 	$(CABAL) run $(EXEC) -- tests/bonust1.4TH
+	$(CABAL) run $(EXEC) -- tests/bonust2.4TH
+	$(CABAL) run $(EXEC) -- tests/bonust3.4TH
 
 unit:
 	runhaskell ValSpec.hs
