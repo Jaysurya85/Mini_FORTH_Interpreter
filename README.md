@@ -34,8 +34,6 @@ tests/           -> Functional test files (.4TH and .out)
 Makefile         -> Build and test automation
 FORTH.cabal      -> Cabal configuration
 
-
-
 ## Implemented Built-in Operations
 - Arithmetic (+,-,*,/,^)
 - Stack Operations (DUP)
@@ -48,3 +46,33 @@ FORTH.cabal      -> Cabal configuration
   - CONCAT2
   - CONCAT3
 
+- Bonus: User-Defined Words
+  - The interpreter supports defining new FORTH words using standard FORTH syntax:
+    ```
+    : NAME body ;
+    Example
+    : SQUARE DUP * ;
+    5 SQUARE .
+    
+    Output:
+    25
+    ```
+  - I also did nested Definations.
+    ```
+    : SQUARE DUP * ;
+    : FOURTH SQUARE SQUARE ;
+    2 FOURTH .
+
+    Output:
+    16
+    ```
+
+## Design Notes
+- The interpreter is purely functional.
+- No global mutable state is used.
+- Interpreter state includes:
+  - Stack
+  - Output string
+  - A Map storing user-defined word definitions
+  - When a user-defined word is encountered, it is expanded into its stored body and executed.
+  - Definitions are stored using Data.Map from the containers library.
